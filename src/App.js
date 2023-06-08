@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import axios from 'axios';
 
 // Components
 import Navigation from './components/Navigation';
@@ -24,112 +23,7 @@ function App() {
   const [parcels, setParcels] = useState([])
   const [parcel, setParcel] = useState({})
   const [toggle, setToggle] = useState(false);
-
-  const [fileImg, setFileImg] = useState(null);
-  const [name, setName] = useState("")
-  const [desc, setDesc] = useState("")
   const [totalSupply, setTotalSupply] = useState(0)
-
-  const sendJSONtoIPFS = async (ImgHash) => {
-
-      try {
-
-          const resJSON = await axios({
-              method: "post",
-              url: "https://api.pinata.cloud/pinning/pinJsonToIPFS",
-              data: {
-                  "name": "Luxury NYC Penthouse",
-                  "address": "157 W 57th St APT 49B, New York, NY 10019",
-                  "description": "Luxury Penthouse located in the heart of NYC",
-                  "image": ImgHash,
-                  "id": totalSupply +1,
-                  "attributes": [
-                      {
-                          "trait_type": "Purchase Price",
-                          "value": 20
-                      },
-                      {
-                          "trait_type": "Type of Residence",
-                          "value": "Condo"
-                      },
-                      {
-                          "trait_type": "Bed Rooms",
-                          "value": 2
-                      },
-                      {
-                          "trait_type": "Bathrooms",
-                          "value": 3
-                      },
-                      {
-                          "trait_type": "Square Feet",
-                          "value": 2200
-                      },
-                      {
-                          "trait_type": "Year Built",
-                          "value": 2013
-                      }
-                  ]
-              },
-              headers: {
-                  'pinata_api_key': `${process.env.REACT_APP_PINATA_API_KEY}`,
-                  'pinata_secret_api_key': `${process.env.REACT_APP_PINATA_API_SECRET}`,
-              },
-          });
-
-          const tokenURI = `https://gateway.pinata.cloud/ipfs/${resJSON.data.IpfsHash}`;
-          mintNFT(tokenURI)
-
-      } catch (error) {
-          console.log("JSON to IPFS: ")
-          console.log(error);
-      }
-
-
-  }
-
-  const sendFileToIPFS = async (e) => {
-      e.preventDefault()
-      if (fileImg) {
-          try {
-              const formData = new FormData();
-              formData.append("file", fileImg);
-
-              const resFile = await axios({
-                  method: "post",
-                  url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
-                  data: formData,
-                  headers: {
-                      'pinata_api_key': `${process.env.REACT_APP_PINATA_API_KEY}`,
-                      'pinata_secret_api_key': `${process.env.REACT_APP_PINATA_API_SECRET}`,
-                      "Content-Type": "multipart/form-data"
-                  },
-              });
-
-              const ImgHash = `https://gateway.pinata.cloud/ipfs/${resFile.data.IpfsHash}`;
-              // console.log(response.data.IpfsHash);
-              sendJSONtoIPFS(ImgHash)
-
-
-          } catch (error) {
-              console.log("File to IPFS: ")
-              console.log(error)
-          }
-      }
-  }
-
-
-  const mintNFT = async (tokenURI) => {
-      try {
-          const signer = provider.getSigner()
-          await land.connect(signer).mint(tokenURI)
-          await landMarketPlace.connect(signer).addSeller(totalSupply+1)
-          setTotalSupply(totalSupply+1)
-      } catch (error) {
-          console.log("Error while minting NFT with contract")
-          console.log(error);
-      }
-
-  }
 
   const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -141,7 +35,7 @@ function App() {
     setTotalSupply(totalSupply.toNumber())
     const parcels = []
     
-    for (var i = 1; i <= totalSupply; i++) {
+    for (var i = 1; i <= totalSupply.toNumber(); i++) {
       const uri = await land.tokenURI(i)
       const response = await fetch(uri)
       const metadata = await response.json()
@@ -171,7 +65,7 @@ function App() {
 
   return (
     <div>
-      <Navigation account={account} setAccount={setAccount} />
+      <Navigation account={account} setAccount={setAccount} land={land} landMarketplace={landMarketPlace} provider={provider} totalSupply={totalSupply}/>
       <Search />
 
       <div className='cards__section'>
@@ -181,31 +75,17 @@ function App() {
         <hr />
 
         <div className='cards'>
-        <div className='mt-3 text-center'>
-            <h2 className='text-white mb-3'>Ajouter une parcelle</h2>
-            <form onSubmit={sendFileToIPFS}>
-                <input type="file" onChange={(e) => setFileImg(e.target.files[0])} required />
-                <input type="text" onChange={(e) => setName(e.target.value)} placeholder='name' required value={name} />
-                <input type="text" onChange={(e) => setDesc(e.target.value)} placeholder="desc" required value={desc} />
-                <br />
-                <button className='bttn_ui me-3' type='submit' >Ajouter une parcelle</button>
-        
-            </form>
-        
-        </div>
           {parcels.map((parcel, index) => (
             <div className='card' key={index} onClick={() => togglePop(parcel)}>
               <div className='card__image'>
-                <img src={parcel.image} alt="Parcel" />
+                <img src="parcel.png" alt="Parcel" />
               </div>
               <div className='card__info'>
                 <h4>{parcel.attributes[0].value} ETH</h4>
                 <p>
                   <strong>{parcel.attributes[2].value}</strong> bds |
                   <strong>{parcel.attributes[3].value}</strong> ba |
-                  <strong>{parcel.attributes[4].value}</strong> sqft
                 </p>
-                <p>{parcel.address}</p>
               </div>
             </div>
           ))}

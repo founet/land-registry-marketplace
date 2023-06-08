@@ -28,7 +28,7 @@ const verify = async(contractAddress, args) => {
 
 async function main() {
   // Setup accounts
-  const [buyer, seller, inspector] = await ethers.getSigners()
+  const [, , inspector] = await ethers.getSigners()
 
   // Deploy Land
   const Land = await ethers.getContractFactory('Land')
@@ -44,41 +44,15 @@ async function main() {
   await landMarketplace.deployed()
 
   console.log(`Deployed Land Contract at: ${land.address}`)
-  console.log(`Minting 3 parcels...\n`)
-
-  if (network.name !== "localhost") {
-    console.log("Verifying smart contract")
-    await land.deployTransaction.wait(6)
-    await verify(land.address, [])
-    await landMarketplace.deployTransaction.wait(6)
-    await verify(landMarketplace.address, [])
-  }
-
-  for (let i = 0; i < 3; i++) {
-    const transaction = await land.connect(seller).mint(`https://ipfs.io/ipfs/QmQVcpsjrA6cr1iJjZAodYwmPekYgbnXGo4DFubJiLc2EB/${i + 1}.json`)
-    await transaction.wait()
-    const transaction1 = await landMarketplace.connect(seller).addSeller(i+1)
-    await transaction1.wait()
-  }
-
   console.log(`Deployed LandMarketplace Contract at: ${landMarketplace.address}`)
-  console.log(`Listing 3 parcels...\n`)
 
-  for (let i = 0; i < 3; i++) {
-    // Approve parcels...
-    let transaction = await land.connect(seller).approve(landMarketplace.address, i + 1)
-    await transaction.wait()
+  if (network.name === "goerli") {
+    console.log("Verifying smart contract")
+    await land.deployTransaction.wait()
+    await verify(land.address, [])
+    await landMarketplace.deployTransaction.wait()
+    await verify(landMarketplace.address, [land.address, inspector.address])
   }
-
-  // Listing parcels...
-  transaction = await landMarketplace.connect(seller).list(1, tokens(0.001))
-  await transaction.wait()
-
-  transaction = await landMarketplace.connect(seller).list(2, tokens(0.002))
-  await transaction.wait()
-
-  transaction = await landMarketplace.connect(seller).list(3, tokens(0.003))
-  await transaction.wait()
 
   console.log(`Finished.`)
 }

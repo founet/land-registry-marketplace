@@ -1,10 +1,10 @@
 {
-    "31337": {
+    "11155111": {
         "land": {
-            "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+            "address": "0xb824ef28fCa406a197aa3c848d100A8ec4cFB540"
         },
         "landmarketpace": {
-            "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+            "address": "0xFcfc7652c0df1E70106c499313Bfc09Ba91bF97b"
         }
     }
 }

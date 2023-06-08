@@ -1,4 +1,4 @@
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 
 import close from '../assets/close.svg';
@@ -15,12 +15,12 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
 
     const [owner, setOwner] = useState(null)
     const [price, setPrice] = useState("")
+    const [purchasePrice, setPurchasePrice] = useState(0)
 
     const fetchDetails = async () => {
 
         const isListed = await landMarketplace.isListed(parcel.id)
         setIsListed(isListed)
-        console.log(isListed)
         // -- Buyer
 
         const buyer = await landMarketplace.buyer(parcel.id)
@@ -44,6 +44,11 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
 
         const hasInspected = await landMarketplace.inspectionPassed(parcel.id)
         setHasInspected(hasInspected)
+
+        const purchasePrice = await landMarketplace.purchasePrice(parcel.id)
+        setPurchasePrice(purchasePrice.toNumber())
+
+        console.log(account, seller)
     }
 
     const fetchOwner = async () => {
@@ -54,7 +59,7 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
     }
 
     const buyHandler = async () => {
-        const purchasePrice = await landMarketplace.purchasePrice(parcel.id)
+        
         const signer = await provider.getSigner()
 
         // Buyer deposit earnest
@@ -111,62 +116,62 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
         <div className="parcel">
             <div className='parcel__details'>
                 <div className="parcel__image">
-                    <img src={parcel.image} alt="Parcel" />
+                    <img src="parcel.png" alt="Parcel" />
                 </div>
                 <div className="parcel__overview">
                     <h1>{parcel.name}</h1>
                     <p>
-                        <strong>{parcel.attributes[3].value}</strong> ba |
-                        <strong>{parcel.attributes[4].value}</strong> sqft
+                        <strong>{parcel.attributes[2].value}</strong> | <strong>{parcel.attributes[3].value}</strong>
                     </p>
                     <p>{parcel.address}</p>
 
-                    <h2>{parcel.attributes[0].value} ETH</h2>
+                    { isListed ? (<h2> {ethers.utils.formatEther(purchasePrice)} ETH</h2>) : ''}
 
-                    {owner ? (
+                    {owner && hasSold ? (
+                        
                         <div className='parcel__owned'>
                             Owned by {owner.slice(0, 6) + '...' + owner.slice(38, 42)}
                         </div>
                     ) : (
                         <div>
-                            {(account === inspector && hasBought) ? (
+                            { 
+                            (account === inspector && hasBought) ? (
                                 <button className='parcel__buy' onClick={inspectHandler} disabled={hasInspected}>
                                     Approve Inspection
                                 </button>
-                            ) : (account === seller && hasInspected) ? (
-                                <button className='parcel__buy' onClick={sellHandler} disabled={hasSold}>
+                            ) : 
+                            (account === seller && hasInspected && hasBought && isListed) ? (
+                                <button className='parcel__buy' onClick={sellHandler} disabled={hasSold} type='button'>
                                     Approve & Sell
                                 </button>
-                            ) :(account === seller && !isListed) ? (
+                            ) :''}
+                            
+                            {(account === seller && !isListed) ? (
                                 <>
                                     <input type='text' name='price' onChange={e => setPrice(e.target.value)} value={price}/>
                                     <button className='parcel__buy' onClick={listHandler}>
                                         List
                                     </button>
                                 </>
-                            ): (
+                            ): ''}
+                            {(account !== seller && account !== inspector && isListed) ? (
                                 <button className='parcel__buy' onClick={buyHandler} disabled={hasBought}>
                                     Buy
                                 </button>
-                            )}
-
-                            <button className='parcel__contact'>
-                                Contact agent
-                            </button>
+                            ) : (!isListed) ? 'Not For sale yet ': ''}
                         </div>
                     )}
 
                     <hr />
 
                     <h2>Overview</h2>
-
                     <p>
                         {parcel.description}
                     </p>
 
                     <hr />
 
-                    <h2>Facts and features</h2>
+                    <h2>Details</h2>
 
                     <ul>
                         {parcel.attributes.map((attribute, index) => (

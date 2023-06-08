@@ -4,7 +4,7 @@ import "dotenv/config";
 
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL || "";
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
-const MY_PRIVATE_KEY = process.env.MY_PRIVATE_KEY || "";
+const BUYER_KEY = process.env.BUYER_KEY || "";
 const SELLER_PRIVATE_KEY = process.env.SELLER_PRIVATE_KEY || "";
 const INSPECTOR_PRIVATE_KEY = process.env.INSPECTOR_PRIVATE_KEY || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
@@ -15,12 +15,12 @@ const config: HardhatUserConfig = {
   networks: {
     goerli: {
       url: GOERLI_RPC_URL,
-      accounts: [MY_PRIVATE_KEY],
+      accounts: [BUYER_KEY],
       chainId: 5
     },
     sepolia: {
       url: SEPOLIA_RPC_URL,
-      accounts: [MY_PRIVATE_KEY, SELLER_PRIVATE_KEY, INSPECTOR_PRIVATE_KEY],
+      accounts: [BUYER_KEY, SELLER_PRIVATE_KEY, INSPECTOR_PRIVATE_KEY],
       chainId: 11155111
     },
     localhost : {

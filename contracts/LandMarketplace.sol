@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import './Land.sol';
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract LandMarketplace {
+contract LandMarketplace is Ownable {
     address public nftAddress;
     address public inspector;
 
