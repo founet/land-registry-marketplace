@@ -119,12 +119,11 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
                     <img src="parcel.png" alt="Parcel" />
                 </div>
                 <div className="parcel__overview">
-                    <h1>{parcel.name}</h1>
+                    <h1 className='text-4xl'>{parcel.name}</h1>
                     <p>
-                        <strong>{parcel.attributes[2].value}</strong> | <strong>{parcel.attributes[3].value}</strong>
+                        <strong>{parcel.attributes[4].value} </strong> | <strong>{parcel.attributes[3].value}</strong>
                     </p>
-                    <p>{parcel.address}</p>
-
+                    
                     { isListed ? (<h2> {ethers.utils.formatEther(purchasePrice)} ETH</h2>) : ''}
 
                     {owner && hasSold ? (
@@ -148,7 +147,7 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
                             
                             {(account === seller && !isListed) ? (
                                 <>
-                                    <input type='text' name='price' onChange={e => setPrice(e.target.value)} value={price}/>
+                                    <input type='text' name='price' className='border-2 p-2 mt-3' placeholder='Price' onChange={e => setPrice(e.target.value)} value={price}/>
                                     <button className='parcel__buy' onClick={listHandler}>
                                         List
                                     </button>
@@ -164,7 +163,7 @@ const Parcel = ({ parcel, provider, account, landMarketplace, land, togglePop })
 
                     <hr />
 
-                    <h2>Overview</h2>
+                    <h2>Description</h2>
                     <p>
                         {parcel.description}
                     </p>

@@ -15,7 +15,7 @@ const config: HardhatUserConfig = {
   networks: {
     goerli: {
       url: GOERLI_RPC_URL,
-      accounts: [BUYER_KEY],
+      accounts: [BUYER_KEY, SELLER_PRIVATE_KEY, INSPECTOR_PRIVATE_KEY],
       chainId: 5
     },
     sepolia: {

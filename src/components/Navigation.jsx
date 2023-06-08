@@ -39,7 +39,7 @@ const Navigation = ({ account, setAccount, totalSupply, provider, land, landMark
                             "value": longitude
                         },
                         {
-                            "trait_type": "Longitude",
+                            "trait_type": "Surface",
                             "value": surface
                         },
                         {

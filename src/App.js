@@ -81,10 +81,14 @@ function App() {
                 <img src="parcel.png" alt="Parcel" />
               </div>
               <div className='card__info'>
-                <h4>{parcel.attributes[0].value} ETH</h4>
+              <p>
+                  <strong>Latitude : {parcel.attributes[0].value}</strong> | Longitude <strong>{parcel.attributes[1].value}</strong>
+                </p>
                 <p>
-                  <strong>{parcel.attributes[2].value}</strong> bds |
-                  <strong>{parcel.attributes[3].value}</strong> ba |
+                  <strong>{parcel.attributes[2].value}</strong> sq
+                </p>
+                <p>
+                  <strong>{parcel.attributes[4].value}</strong> | <strong>{parcel.attributes[3].value}</strong>
                 </p>
               </div>
             </div>
